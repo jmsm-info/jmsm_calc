@@ -1,0 +1,12 @@
+*
+!/img/
+!/img/*
+!/tmp/
+!/tmp/*
+!/logs/
+!/logs/.gitkeep
+!msm_calc.py
+!sec_test.py
+!readme.md
+!sample_config.ini
+!.gitignore
