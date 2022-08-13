@@ -202,8 +202,10 @@ def calc_dmg(aab,phy = True, skill_base_dmg = 0, skill_dmg = 100):
         p = 3
 #    dmg = (skill_base_dmg + aab[p+0] * (skill_dmg * (100 + aab[6]) + aab[p+1])) * (100 + aab[p+2]) * (100 + aab[11])
 #    return int(dmg/100000000), int(dmg*(120 + aab[9])/10000000000)
-    dmg = (skill_base_dmg + aab[p+0] * (skill_dmg/100 * (1 + aab[6]/100) + aab[p+1]/100)) * (1 + aab[p+2]/100) * (1 + aab[11]/100)
-    return int(dmg), int(dmg*(1.2 + aab[9]/100))
+#    dmg = (skill_base_dmg + aab[p+0] * (skill_dmg/100 * (1 + aab[6]/100) + aab[p+1]/100)) * (1 + aab[p+2]/100) * (1 + aab[11]/100)
+#    return int(dmg), int(dmg*(1.2 + aab[9]/100))
+    dmg = (skill_base_dmg + aab[p+0] * (skill_dmg/100 * (1 + aab[6]/100) + aab[p+1]/100)) * (1 + aab[p+2]/100) * (1 + aab[10]/100)
+    return int(dmg), int(dmg*(1.2 + aab[8]/100))
 
 # 戦闘力の増減分を再計算
 def calc_combat(aab, _aab, combat_power, phy = True):
@@ -212,15 +214,48 @@ def calc_combat(aab, _aab, combat_power, phy = True):
     else:
         p = 3
     # 元の攻撃力の増加分を引いて、HPと防御力の増加分だけにする
-    combat_power -= aab[p+0]*(100+aab[p+1]+1.5*(aab[p+2]+aab[6]+aab[8])+2*aab[9]+3*aab[11])/100
+#    combat_power -= aab[p+0]*(100+aab[p+1]+1.5*(aab[p+2]+aab[6]+aab[8])+2*aab[9]+3*aab[11])/100
+    combat_power -= aab[p+0]*(100+aab[p+1]+1.5*(aab[p+2]+aab[6]+aab[7])+2*aab[8]+3*aab[10])/100
 
     # 新しい攻撃力の増加分を計算し、足す
-    combat_power += _aab[p+0]*(100+_aab[p+1]+1.5*(_aab[p+2]+_aab[6]+_aab[8])+2*_aab[9]+3*_aab[11])/100
+#    combat_power += _aab[p+0]*(100+_aab[p+1]+1.5*(_aab[p+2]+_aab[6]+_aab[8])+2*_aab[9]+3*_aab[11])/100
+    combat_power += _aab[p+0]*(100+_aab[p+1]+1.5*(_aab[p+2]+_aab[6]+_aab[7])+2*_aab[8]+3*_aab[10])/100    
 
     return int(combat_power)
+#旧
+# 0 物理攻撃力
+# 1 物理攻撃力上昇
+# 2 物理ダメージ上昇
+# 3 魔法攻撃力
+# 4 魔法攻撃力上昇
+# 5 魔法ダメージ上昇
+# 6 対ボス攻撃力上昇
+# 7 対プレイヤー攻撃力上昇
+# 8 クリティカル率
+# 9 クリティカルダメージ
+#10 最大ダメージ
+#11 最終ダメージ
 
-unit = ['','%','%','','%','%','%','%','%','%','','%']
-aab_desc = ['物理攻撃力','物理攻撃力上昇','物理ダメージ上昇','魔法攻撃力','魔法攻撃力上昇','魔法ダメージ上昇','対ボス攻撃力上昇','対プレイヤー攻撃力上昇','クリティカル率','クリティカルダメージ','最大ダメージ','最終ダメージ']
+#新
+# 0 物理攻撃力
+# 1 物理攻撃力上昇
+# 2 物理ダメージ上昇
+# 3 魔法攻撃力
+# 4 魔法攻撃力上昇
+# 5 魔法ダメージ上昇
+# 6 対ボス攻撃力上昇
+# 7 クリティカル率
+# 8 クリティカルダメージ
+# 9 最大ダメージ
+#10 最終ダメージ
+#11 防御力無視率
+
+
+#unit = ['','%','%','','%','%','%','%','%','%','','%']
+#aab_desc = ['物理攻撃力','物理攻撃力上昇','物理ダメージ上昇','魔法攻撃力','魔法攻撃力上昇','魔法ダメージ上昇','対ボス攻撃力上昇','対プレイヤー攻撃力上昇','クリティカル率','クリティカルダメージ','最大ダメージ','最終ダメージ']
+unit = ['','%','%','','%','%','%','%','%','','%','%']
+aab_desc = ['物理攻撃力','物理攻撃力上昇','物理ダメージ上昇','魔法攻撃力','魔法攻撃力上昇','魔法ダメージ上昇','対ボス攻撃力上昇','クリティカル率','クリティカルダメージ','最大ダメージ','最終ダメージ','防御力無視率']
+
 def res_text(aab,combat_power, skill_base_dmg = 0, skill_dmg = 100):
     _s = ''
     for i,s in enumerate(unit):
@@ -359,16 +394,20 @@ async def res(message):
     builder = pyocr.builders.TextBuilder(tesseract_layout=6)
 
     # 戦闘力を取得
-    _img = img.crop((358,253,480,277))
+#    _img = img.crop((358,253,480,277))
+    _img = img.crop((350,237,482,261))
     text = tool.image_to_string(_img, lang="eng", builder=builder)
     combat_power = int(re.sub(r"\D", "", text))
 
     # 各ステータスを取得
-    _img = img.crop((1100,196,1246,700))
+#    _img = img.crop((1100,196,1246,700))
+    _img = img.crop((1092,193,1266,701))
+
 
     text = tool.image_to_string(_img, lang="eng", builder=builder)
     text = text.split()
 
+    print(text)
     c = 0
     for i in range(0,len(text)-len(unit)+1):
         c = 0
